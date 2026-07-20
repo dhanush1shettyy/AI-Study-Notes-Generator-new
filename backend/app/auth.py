@@ -5,6 +5,8 @@ from .database import get_db
 from .models import User
 from .schemas import UserCreate, UserResponse
 from .security import hash_password
+from .security import verify_password
+from .jwt_handler import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -27,3 +29,22 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+@router.post("/login")
+def login(user: UserCreate, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.email == user.email).first()
+
+    if not existing_user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    if not verify_password(user.password, existing_user.password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    access_token = create_access_token(
+        {"sub": existing_user.email}
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }

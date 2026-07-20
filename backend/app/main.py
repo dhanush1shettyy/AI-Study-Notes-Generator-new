@@ -4,6 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine
 from . import models
 from .auth import router as auth_router
+from .dependencies import get_current_user
+from .models import User
+from fastapi import Depends
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -28,3 +31,11 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+@app.get("/me")
+def get_profile(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email,
+    }
