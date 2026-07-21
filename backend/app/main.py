@@ -7,6 +7,7 @@ from .auth import router as auth_router
 from .dependencies import get_current_user
 from .models import User
 from fastapi import Depends
+from .upload import router as upload_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -21,7 +22,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
-
+app.include_router(upload_router)
 
 @app.get("/")
 def read_root():

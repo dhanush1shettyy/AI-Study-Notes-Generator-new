@@ -22,6 +22,10 @@ export default function LoginPage() {
   console.log("Saved token:", localStorage.getItem("token"));
 
   setMessage("✅ Login Successful!");
+
+  setTimeout(() => {
+    window.location.href = "/dashboard";
+}, 500);
 } else {
       setMessage(result.detail || "Login Failed");
     }
