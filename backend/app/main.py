@@ -8,7 +8,7 @@ from .dependencies import get_current_user
 from .models import User
 from fastapi import Depends
 from .upload import router as upload_router
-
+from .chat import router as chat_router
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AI Study Notes Generator API")
@@ -23,6 +23,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(upload_router)
+app.include_router(chat_router)
 
 @app.get("/")
 def read_root():

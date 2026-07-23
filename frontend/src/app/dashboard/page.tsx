@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getProfile, uploadFile } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import jsPDF from "jspdf";
 import {
   FaFileUpload,
   FaRobot,
@@ -49,47 +50,63 @@ export default function DashboardPage() {
 
     navigator.clipboard.writeText(uploadResult.notes);
 
-    alert("Notes copied!");
+    alert("✅ Notes copied!");
   };
+
+const downloadPDF = () => {
+  if (!uploadResult?.notes) return;
+
+  const doc = new jsPDF();
+
+  const lines = doc.splitTextToSize(uploadResult.notes, 180);
+
+  doc.setFont("helvetica");
+
+  doc.setFontSize(12);
+
+  doc.text(lines, 15, 20);
+
+  doc.save("StudyFlow_AI_Notes.pdf");
+};
 
   const logout = () => {
     localStorage.removeItem("token");
     router.push("/login");
   };
 
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-black via-zinc-950 to-indigo-950 text-white">
 
-    return (
-              <div className="relative min-h-screen overflow-hidden bg-[#09090B] text-white">
+      {/* Background Glow */}
+      <div className="absolute inset-0">
+        <div className="absolute -top-60 -left-40 h-[500px] w-[500px] rounded-full bg-purple-600/20 blur-[160px]" />
 
-              <div className="absolute inset-0">
+        <div className="absolute top-20 right-0 h-[450px] w-[450px] rounded-full bg-blue-600/20 blur-[160px]" />
 
-              <div className="absolute -top-60 -left-40 h-[500px] w-[500px] rounded-full bg-purple-600/20 blur-[150px]" />
+        <div className="absolute bottom-0 left-1/2 h-[350px] w-[350px] -translate-x-1/2 rounded-full bg-indigo-500/20 blur-[140px]" />
+      </div>
 
-              <div className="absolute top-20 right-0 h-[450px] w-[450px] rounded-full bg-blue-600/20 blur-[150px]" />
+      <div className="relative z-10 max-w-6xl mx-auto p-10">
 
-              <div className="absolute bottom-0 left-1/2 h-[350px] w-[350px] -translate-x-1/2 rounded-full bg-indigo-500/20 blur-[120px]" />
-
-</div>
-
-<div className="relative z-10">
-
-      <div className="max-w-6xl mx-auto p-10">
+        {/* Header */}
 
         <div className="flex justify-between items-center mb-10">
 
           <div>
-            <h1 className="text-5xl font-bold">
-              📚 AI Study Notes Generator
+
+            <h1 className="text-5xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              AI Study Notes Generator
             </h1>
 
-            <p className="text-gray-400 mt-3">
-              Upload your PDF and let Gemini AI generate beautiful study notes.
+            <p className="text-gray-400 mt-3 text-lg">
+              Upload your study material and generate clean, structured notes in seconds.
             </p>
+
           </div>
 
           <button
             onClick={logout}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-5 py-3 rounded-lg"
+            className="flex items-center gap-2 rounded-xl bg-red-500 px-6 py-3 font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-red-600"
           >
             <FaSignOutAlt />
             Logout
@@ -97,27 +114,79 @@ export default function DashboardPage() {
 
         </div>
 
+        {/* User Card */}
+
         {user && (
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-8">
+          <div className="mb-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-xl">
 
-            <h2 className="text-xl font-semibold mb-2">
-              Welcome 👋
+            <h2 className="mb-3 text-2xl font-bold">
+              👋 Welcome Back
             </h2>
 
-            <p>Name: {user.name}</p>
+            <p className="text-gray-300">
+              <span className="font-semibold">Name:</span> {user.name}
+            </p>
 
-            <p>Email: {user.email}</p>
+            <p className="text-gray-300">
+              <span className="font-semibold">Email:</span> {user.email}
+            </p>
 
           </div>
 
         )}
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+  <div className="rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition">
+
+    <p className="text-gray-400 text-sm">
+      Uploaded File
+    </p>
+
+    <h2 className="text-2xl font-bold mt-2">
+      {uploadResult ? "1" : "0"}
+    </h2>
+
+  </div>
+
+  <div className="rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition">
+
+    <p className="text-gray-400 text-sm">
+      Characters
+    </p>
+
+    <h2 className="text-2xl font-bold mt-2">
+      {uploadResult?.characters || 0}
+    </h2>
+
+  </div>
+
+  <div className="rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition">
+
+    <p className="text-gray-400 text-sm">
+      Status
+    </p>
+
+    <h2 className="text-2xl font-bold mt-2 text-green-400">
+      Ready
+    </h2>
+
+  </div>
+
+</div>
+
+
+        {/* Upload Card */}
+
+        <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-xl">
+
+          <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold">
+
             <FaFileUpload />
+
             Upload Study Material
+
           </h2>
 
           <input
@@ -128,26 +197,54 @@ export default function DashboardPage() {
                 setSelectedFile(e.target.files[0]);
               }
             }}
-            className="w-full bg-zinc-800 p-4 rounded-lg"
+            className="w-full rounded-xl border border-zinc-700 bg-zinc-900 p-4 transition hover:border-indigo-500"
           />
+
+          {selectedFile && (
+            <div className="mt-4 rounded-xl bg-zinc-900 p-4 border border-zinc-700">
+              <p className="font-semibold">
+                Selected File
+              </p>
+
+              <p className="text-gray-400 mt-1">
+                {selectedFile.name}
+              </p>
+            </div>
+         )}
 
           <button
             onClick={handleUpload}
             disabled={loading}
-            className="mt-5 w-full bg-indigo-600 hover:bg-indigo-700 transition p-4 rounded-lg font-semibold"
+            className="mt-6 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-4 text-lg font-bold transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
           >
             {loading
-              ? "🤖 Gemini is generating notes..."
-              : "Upload & Generate Notes"}
+              ? "🤖 Generating notes..."
+              : "✨ Generate Study Notes"}
           </button>
+
+          {loading && (
+            <div className="mt-8 rounded-2xl border border-indigo-500/20 bg-zinc-900 p-8 text-center animate-pulse">
+              <div className="mx-auto h-12 w-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+
+              <h3 className="mt-6 text-xl font-bold">
+                Creating your study notes...
+              </h3>
+
+              <p className="mt-2 text-gray-400">
+                Extracting text, analyzing the document and organizing everything into clean notes.
+              </p>
+            </div>
+          )}
 
         </div>
 
+        {/* AI Notes */}
+
         {uploadResult && (
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 mt-10">
+          <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-xl">
 
-            <h2 className="text-2xl font-bold flex items-center gap-3 mb-5">
+            <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold">
 
               <FaRobot />
 
@@ -155,34 +252,73 @@ export default function DashboardPage() {
 
             </h2>
 
-            <div className="text-sm text-gray-400 mb-5">
+            <div className="mb-6 rounded-xl bg-zinc-900/60 p-4 text-gray-300">
 
-              <p>📄 {uploadResult.filename}</p>
+              <p>📄 <strong>{uploadResult.filename}</strong></p>
 
               <p>{uploadResult.characters} characters extracted</p>
 
+              <p className="mt-2">
+               AI Notes Successfully Generated
+              </p>
+
             </div>
 
-            <div className="prose prose-invert max-w-none">
+            <div className="prose prose-invert max-w-none rounded-xl bg-zinc-950/50 p-6">
 
               <ReactMarkdown>
-
                 {uploadResult.notes}
+              </ReactMarkdown>
 
+            </div>
+            <div className="mt-8 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black shadow-2xl">
+
+              <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+
+                <div>
+                  <h3 className="text-xl font-bold">
+                  📚 Study Notes
+                </h3>
+
+                <p className="text-sm text-gray-400">
+                  AI generated summary
+                </p>
+              </div>
+
+              <span className="rounded-full bg-indigo-600/20 px-4 py-2 text-sm text-indigo-300">
+                Ready
+              </span>
+
+            </div>
+
+            <div className="prose prose-invert max-w-none p-8">
+
+              <ReactMarkdown>
+                {uploadResult.notes}
               </ReactMarkdown>
 
             </div>
 
-            <button
-              onClick={copyNotes}
-              className="mt-8 flex items-center gap-2 bg-green-600 hover:bg-green-700 px-5 py-3 rounded-lg"
-            >
+          </div>
 
-              <FaCopy />
+            <div className="mt-8 flex flex-wrap gap-4">
 
-              Copy Notes
+  <button
+    onClick={copyNotes}
+    className="flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-semibold transition-all duration-300 hover:scale-105 hover:bg-green-700"
+  >
+    <FaCopy />
+    Copy to Clipboard
+  </button>
 
-            </button>
+  <button
+    onClick={downloadPDF}
+    className="rounded-xl bg-red-600 px-6 py-3 font-semibold transition-all duration-300 hover:scale-105 hover:bg-red-700"
+  >
+    📄 Download PDF
+  </button>
+
+</div>
 
           </div>
 

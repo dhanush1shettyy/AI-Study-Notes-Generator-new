@@ -39,14 +39,36 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-white/90 to-white/40 drop-shadow-sm">
-            AI Study Notes Generator
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+          StudyFlow AI
           </h1>
 
-          <p className="text-xl md:text-2xl text-zinc-400 font-medium max-w-2xl mx-auto leading-relaxed">
-            Your AI-powered study companion.
+          <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl leading-relaxed">
+           Transform your PDFs into beautifully organized
+           <span className="text-white font-semibold">
+            {" "}AI-powered study notes{" "}
+           </span>
+           within seconds.
           </p>
-        </div>
+
+          <div className="flex flex-col sm:flex-row gap-5 justify-center mt-10">
+
+           <a
+             href="/register"
+             className="px-8 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition font-semibold shadow-lg"
+           >
+             Get Started
+           </a>
+
+           <a
+             href="/login"
+             className="px-8 py-4 rounded-xl border border-zinc-700 hover:border-indigo-500 hover:bg-zinc-900 transition font-semibold"
+           >
+             Login
+           </a>
+
+          </div>
+      </div>
 
         {/* Status Indicator */}
         <div className="pt-8">

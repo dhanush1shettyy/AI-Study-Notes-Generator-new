@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, File
 
 from .parser import read_pdf, read_docx
-
 from .ai.gemini import generate_notes
+
 router = APIRouter(prefix="/upload", tags=["Upload"])
 
 
@@ -21,9 +21,10 @@ async def upload_file(file: UploadFile = File(...)):
 
     notes = generate_notes(text)
 
-    return{
-    "filename": file.filename,
-    "characters": len(text),
-    "preview": text[:500],
-    "notes": notes,
-}
+    return {
+        "filename": file.filename,
+        "characters": len(text),
+        "preview": text[:500],
+        "notes": notes,
+        "document": text,
+    }
