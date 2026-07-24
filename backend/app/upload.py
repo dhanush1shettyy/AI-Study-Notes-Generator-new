@@ -22,9 +22,10 @@ async def upload_file(file: UploadFile = File(...)):
     notes = generate_notes(text)
 
     return {
-        "filename": file.filename,
-        "characters": len(text),
-        "preview": text[:500],
-        "notes": notes,
-        "document": text,
-    }
+    "filename": file.filename,
+    "characters": len(text),
+    "preview": text[:500],
+    "document": text,
+    "notes": notes,
+}
+    

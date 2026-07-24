@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProfile, uploadFile } from "@/lib/api";
+import { getProfile, uploadFile, askQuestion } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import jsPDF from "jspdf";
@@ -17,9 +17,15 @@ export default function DashboardPage() {
 
   const [user, setUser] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [dragging, setDragging] = useState(false);
   const [uploadResult, setUploadResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [asking, setAsking] = useState(false);
 
+  const [messages, setMessages] = useState<
+    { role: "user" | "ai"; text: string }[]
+  >([]);
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -38,12 +44,50 @@ export default function DashboardPage() {
       setLoading(true);
 
       const result = await uploadFile(selectedFile);
-
+      console.log(result);
       setUploadResult(result);
     } finally {
       setLoading(false);
     }
   };
+
+const handleAskQuestion = async () => {
+  if (!question.trim()) return;
+  console.log(uploadResult.document.length);
+console.log(question);
+  if (!uploadResult?.preview) {
+    alert("Please upload a document first.");
+    return;
+  }
+
+  try {
+    setAsking(true);
+
+   const result = await askQuestion(
+  uploadResult.document,
+  question
+);
+
+setMessages((prev) => [
+  ...prev,
+  {
+    role: "user",
+    text: question,
+  },
+  {
+    role: "ai",
+    text: result.answer,
+  },
+]);
+
+setQuestion("");
+  } catch (error) {
+    console.error(error);
+    alert("Failed to get AI response.");
+  } finally {
+    setAsking(false);
+  }
+};
 
   const copyNotes = () => {
     if (!uploadResult?.notes) return;
@@ -68,7 +112,10 @@ const downloadPDF = () => {
 
   doc.save("StudyFlow_AI_Notes.pdf");
 };
-
+const newChat = () => {
+  setMessages([]);
+  setQuestion("");
+};
   const logout = () => {
     localStorage.removeItem("token");
     router.push("/login");
@@ -181,24 +228,80 @@ const downloadPDF = () => {
 
         <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-xl">
 
-          <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold">
+          <div className="flex justify-between items-center mb-6">
+
+            <h2 className="text-3xl font-bold flex items-center gap-3">
+              🤖 Ask AI
+            </h2>
+
+            <button
+              onClick={newChat}
+              className="rounded-xl bg-zinc-800 px-5 py-2 font-semibold hover:bg-zinc-700 transition"
+            >
+              + New Chat
+            </button>
+
+          </div>
 
             <FaFileUpload />
 
             Upload Study Material
 
-          </h2>
+          
 
-          <input
-            type="file"
-            accept=".pdf,.docx"
-            onChange={(e) => {
-              if (e.target.files) {
-                setSelectedFile(e.target.files[0]);
-              }
-            }}
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-900 p-4 transition hover:border-indigo-500"
-          />
+          <div
+  onDragOver={(e) => {
+    e.preventDefault();
+    setDragging(true);
+  }}
+  onDragLeave={() => setDragging(false)}
+  onDrop={(e) => {
+    e.preventDefault();
+    setDragging(false);
+
+    if (e.dataTransfer.files.length > 0) {
+      setSelectedFile(e.dataTransfer.files[0]);
+    }
+  }}
+  className={`rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-300 cursor-pointer ${
+    dragging
+      ? "border-indigo-500 bg-indigo-500/10 scale-[1.02]"
+      : "border-zinc-700 bg-zinc-900/40"
+  }`}
+>
+
+  <input
+    type="file"
+    accept=".pdf,.docx"
+    id="fileUpload"
+    hidden
+    onChange={(e) => {
+      if (e.target.files) {
+        setSelectedFile(e.target.files[0]);
+      }
+    }}
+  />
+
+  <label
+    htmlFor="fileUpload"
+    className="cursor-pointer"
+  >
+
+    <div className="text-6xl mb-4">
+      📄
+    </div>
+
+    <h3 className="text-2xl font-bold">
+      Drag & Drop your PDF here
+    </h3>
+
+    <p className="mt-2 text-gray-400">
+      or click to browse your computer
+    </p>
+
+  </label>
+
+</div>
 
           {selectedFile && (
             <div className="mt-4 rounded-xl bg-zinc-900 p-4 border border-zinc-700">
@@ -317,6 +420,78 @@ const downloadPDF = () => {
   >
     📄 Download PDF
   </button>
+
+</div>
+
+
+{/* Ask AI About Document */}
+
+<div className="mt-10 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-xl">
+
+  <div className="flex items-center justify-between mb-6">
+
+  <h2 className="text-3xl font-bold">
+    💬 Ask AI About This Document
+  </h2>
+
+  <button
+    onClick={newChat}
+    className="rounded-xl bg-zinc-800 px-5 py-2 font-semibold transition hover:bg-zinc-700"
+  >
+    ✨ New Chat
+  </button>
+
+</div>
+
+  <textarea
+    value={question}
+    onChange={(e) => setQuestion(e.target.value)}
+    placeholder="Ask anything about the uploaded document..."
+    className="w-full h-32 resize-none rounded-xl border border-zinc-700 bg-zinc-900 p-4 focus:border-indigo-500 focus:outline-none"
+  />
+
+  <button
+    onClick={handleAskQuestion}
+    disabled={asking}
+    className="mt-5 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-4 font-bold transition hover:scale-[1.02]"
+  >
+    {asking ? "Thinking..." : "Ask AI"}
+  </button>
+
+  {messages.length > 0 && (
+
+  <div className="mt-8 space-y-4">
+
+    {messages.map((msg, index) => (
+
+      <div
+        key={index}
+        className={`rounded-2xl p-5 ${
+          msg.role === "user"
+            ? "bg-indigo-600/20 border border-indigo-500"
+            : "bg-zinc-900 border border-zinc-700"
+        }`}
+      >
+
+        <p className="font-bold mb-2">
+          {msg.role === "user" ? "🧑 You" : "🤖 AI"}
+        </p>
+
+        <div className="prose prose-invert max-w-none">
+
+          <ReactMarkdown>
+            {msg.text}
+          </ReactMarkdown>
+
+        </div>
+
+      </div>
+
+    ))}
+
+  </div>
+
+)}
 
 </div>
 
