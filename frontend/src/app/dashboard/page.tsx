@@ -10,8 +10,10 @@ import {
   FaRobot,
   FaCopy,
   FaSignOutAlt,
+  FaFileAlt,
+  FaFont,
+  FaCheckCircle,
 } from "react-icons/fa";
-
 export default function DashboardPage() {
   const router = useRouter();
 
@@ -183,46 +185,81 @@ const newChat = () => {
 
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-  <div className="rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition">
+  {/* Uploaded Files */}
 
-    <p className="text-gray-400 text-sm">
-      Uploaded File
-    </p>
+  <div className="rounded-3xl bg-gradient-to-br from-indigo-600/20 to-indigo-900/20 border border-indigo-500/20 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 shadow-lg">
 
-    <h2 className="text-2xl font-bold mt-2">
-      {uploadResult ? "1" : "0"}
-    </h2>
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="text-gray-400 text-sm">
+          Uploaded Files
+        </p>
+
+        <h2 className="text-3xl font-bold mt-2">
+          {uploadResult ? "1" : "0"}
+        </h2>
+
+      </div>
+
+      <FaFileAlt className="text-4xl text-indigo-400" />
+
+    </div>
 
   </div>
 
-  <div className="rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition">
+  {/* Characters */}
 
-    <p className="text-gray-400 text-sm">
-      Characters
-    </p>
+  <div className="rounded-3xl bg-gradient-to-br from-purple-600/20 to-purple-900/20 border border-purple-500/20 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 shadow-lg">
 
-    <h2 className="text-2xl font-bold mt-2">
-      {uploadResult?.characters || 0}
-    </h2>
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="text-gray-400 text-sm">
+          Characters
+        </p>
+
+        <h2 className="text-3xl font-bold mt-2">
+          {uploadResult?.characters || 0}
+        </h2>
+
+      </div>
+
+      <FaFont className="text-4xl text-purple-400" />
+
+    </div>
 
   </div>
 
-  <div className="rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition">
+  {/* AI Status */}
 
-    <p className="text-gray-400 text-sm">
-      Status
-    </p>
+  <div className="rounded-3xl bg-gradient-to-br from-green-600/20 to-green-900/20 border border-green-500/20 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 shadow-lg">
 
-    <h2 className="text-2xl font-bold mt-2 text-green-400">
-      Ready
-    </h2>
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="text-gray-400 text-sm">
+          AI Status
+        </p>
+
+        <h2 className="text-3xl font-bold mt-2 text-green-400">
+          Ready
+        </h2>
+
+      </div>
+
+      <FaCheckCircle className="text-4xl text-green-400" />
+
+    </div>
 
   </div>
 
 </div>
-
 
         {/* Upload Card */}
 
@@ -451,12 +488,38 @@ const newChat = () => {
   />
 
   <button
-    onClick={handleAskQuestion}
-    disabled={asking}
-    className="mt-5 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-4 font-bold transition hover:scale-[1.02]"
-  >
-    {asking ? "Thinking..." : "Ask AI"}
-  </button>
+  onClick={handleAskQuestion}
+  disabled={asking}
+  className="mt-5 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-4 font-bold transition hover:scale-[1.02] disabled:opacity-70"
+>
+  {asking ? "🤖 AI is Thinking..." : "Ask AI"}
+</button>
+
+{asking && (
+
+  <div className="mt-6 rounded-2xl border border-indigo-500/20 bg-zinc-900 p-6">
+
+    <div className="flex items-center gap-4">
+
+      <div className="h-10 w-10 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+
+      <div>
+
+        <h3 className="font-bold text-lg">
+          Analyzing your document...
+        </h3>
+
+        <p className="text-gray-400">
+          Finding the most relevant answer from your uploaded notes.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
 
   {messages.length > 0 && (
 
