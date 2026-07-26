@@ -5,6 +5,7 @@ import { getProfile, uploadFile, askQuestion } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import jsPDF from "jspdf";
+import toast from "react-hot-toast";
 import {
   FaFileUpload,
   FaRobot,
@@ -22,6 +23,7 @@ export default function DashboardPage() {
   const [dragging, setDragging] = useState(false);
   const [uploadResult, setUploadResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [question, setQuestion] = useState("");
   const [asking, setAsking] = useState(false);
 
@@ -39,19 +41,38 @@ export default function DashboardPage() {
     getProfile().then(setUser);
   }, [router]);
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
+ const handleUpload = async () => {
+  if (!selectedFile) return;
 
-    try {
-      setLoading(true);
+  let timer: ReturnType<typeof setInterval> | null = null;
 
-      const result = await uploadFile(selectedFile);
-      console.log(result);
-      setUploadResult(result);
-    } finally {
-      setLoading(false);
+  try {
+    setLoading(true);
+    setProgress(10);
+
+    timer = setInterval(() => {
+      setProgress((prev) => (prev >= 90 ? prev : prev + 10));
+    }, 300);
+
+    const result = await uploadFile(selectedFile);
+
+    setUploadResult(result);
+    setProgress(100);
+
+    toast.success("Study notes generated successfully!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Something went wrong.");
+  } finally {
+    if (timer) {
+      clearInterval(timer);
     }
-  };
+    setTimeout(() => {
+      setLoading(false);
+      setProgress(0);
+    }, 500);
+  }
+};
 
 const handleAskQuestion = async () => {
   if (!question.trim()) return;
@@ -96,7 +117,7 @@ setQuestion("");
 
     navigator.clipboard.writeText(uploadResult.notes);
 
-    alert("✅ Notes copied!");
+    toast.success("Notes copied successfully!");
   };
 
 const downloadPDF = () => {
@@ -363,6 +384,7 @@ const newChat = () => {
           </button>
 
           {loading && (
+            
             <div className="mt-8 rounded-2xl border border-indigo-500/20 bg-zinc-900 p-8 text-center animate-pulse">
               <div className="mx-auto h-12 w-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
 
@@ -377,6 +399,18 @@ const newChat = () => {
           )}
 
         </div>
+        <div className="mt-6 h-3 w-full rounded-full bg-zinc-800 overflow-hidden">
+
+  <div
+    className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
+    style={{ width: `${progress}%` }}
+  />
+
+</div>
+
+<p className="mt-2 text-sm text-gray-400">
+  {progress}% Completed
+</p>
 
         {/* AI Notes */}
 
