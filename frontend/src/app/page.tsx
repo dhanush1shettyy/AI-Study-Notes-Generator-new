@@ -3,112 +3,322 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [backendStatus, setBackendStatus] = useState<"checking" | "connected" | "offline">("checking");
+  const [backendStatus, setBackendStatus] = useState<
+    "checking" | "connected" | "offline"
+  >("checking");
 
   useEffect(() => {
-    console.log("useEffect is running");
-
     const checkBackend = async () => {
-      console.log("Calling backend...");
-
       try {
         const res = await fetch("http://127.0.0.1:8000/health");
-        console.log("Status:", res.status);
 
         if (res.ok) {
           setBackendStatus("connected");
         } else {
           setBackendStatus("offline");
         }
-      } catch (error) {
-        console.error(error);
+      } catch {
         setBackendStatus("offline");
       }
     };
 
     checkBackend();
   }, []);
-  return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center justify-center p-8 font-sans selection:bg-indigo-500/30">
-      <div className="max-w-3xl w-full flex flex-col items-center text-center space-y-12">
-        {/* Hero Section */}
-        <div className="space-y-6">
-          <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white/5 border border-white/10 shadow-sm backdrop-blur-md mb-4">
-            <span className="text-sm font-medium tracking-wide text-zinc-300">
-              New Version Available ✨
-            </span>
-          </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-          StudyFlow AI
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-indigo-500/30">
+
+      {/* ================= NAVBAR ================= */}
+
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+
+          <h1 className="text-2xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            StudyFlow AI
           </h1>
 
-          <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl leading-relaxed">
-           Transform your PDFs into beautifully organized
-           <span className="text-white font-semibold">
-            {" "}AI-powered study notes{" "}
-           </span>
-           within seconds.
-          </p>
+          <div className="hidden md:flex items-center gap-8 text-zinc-300">
 
-          <div className="flex flex-col sm:flex-row gap-5 justify-center mt-10">
+            <a
+              href="#features"
+              className="hover:text-white transition"
+            >
+              Features
+            </a>
 
-           <a
-             href="/register"
-             className="px-8 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition font-semibold shadow-lg"
-           >
-             Get Started
-           </a>
+            <a
+              href="/login"
+              className="hover:text-white transition"
+            >
+              Login
+            </a>
 
-           <a
-             href="/login"
-             className="px-8 py-4 rounded-xl border border-zinc-700 hover:border-indigo-500 hover:bg-zinc-900 transition font-semibold"
-           >
-             Login
-           </a>
+            <a
+              href="/register"
+              className="rounded-xl bg-indigo-600 px-5 py-2 hover:bg-indigo-700 transition text-white"
+            >
+              Get Started
+            </a>
 
           </div>
-      </div>
 
-        {/* Status Indicator */}
-        <div className="pt-8">
-          <div
-            className={`inline-flex items-center space-x-3 px-6 py-3 rounded-2xl border backdrop-blur-md transition-all duration-500 ease-out ${backendStatus === "checking"
-              ? "bg-zinc-800/50 border-zinc-700/50 text-zinc-300"
-              : backendStatus === "connected"
-                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)]"
-                : "bg-rose-500/10 border-rose-500/20 text-rose-400 shadow-[0_0_30px_-5px_rgba(244,63,94,0.15)]"
-              }`}
-          >
-            <div className="relative flex h-3 w-3">
-              {backendStatus === "checking" && (
-                <span className="animate-spin rounded-full h-3 w-3 border-2 border-zinc-500 border-t-zinc-300"></span>
-              )}
-              {backendStatus === "connected" && (
-                <>
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                </>
-              )}
-              {backendStatus === "offline" && (
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
-              )}
-            </div>
-            <span className="font-semibold tracking-wide">
-              {backendStatus === "checking"
-                ? "Checking Backend..."
-                : backendStatus === "connected"
-                  ? "Backend Connected"
-                  : "Backend Offline"}
+        </div>
+      </nav>
+
+      {/* ================= HERO ================= */}
+
+      <section className="flex min-h-[90vh] items-center justify-center px-8">
+
+        <div className="max-w-4xl text-center space-y-8">
+
+          <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-md">
+            <span className="text-sm text-zinc-300">
+              ✨ AI Powered Learning Platform
             </span>
           </div>
+
+          <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            StudyFlow AI
+          </h1>
+
+          <p className="mx-auto max-w-3xl text-xl md:text-2xl leading-relaxed text-zinc-400">
+            Transform your PDFs into beautifully organized
+            <span className="font-semibold text-white">
+              {" "}AI-powered study notes{" "}
+            </span>
+            within seconds.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-5 pt-4">
+
+            <a
+              href="/register"
+              className="rounded-xl bg-indigo-600 px-8 py-4 font-semibold shadow-lg transition hover:scale-105 hover:bg-indigo-700"
+            >
+              🚀 Get Started
+            </a>
+
+            <a
+              href="/login"
+              className="rounded-xl border border-zinc-700 px-8 py-4 font-semibold transition hover:border-indigo-500 hover:bg-zinc-900"
+            >
+              Login
+            </a>
+
+          </div>
+
+          {/* Backend Status */}
+
+          <div className="pt-6">
+
+            <div
+              className={`inline-flex items-center gap-3 rounded-2xl border px-6 py-3 backdrop-blur-md transition-all duration-500
+
+              ${
+                backendStatus === "checking"
+                  ? "border-zinc-700 bg-zinc-800/50 text-zinc-300"
+                  : backendStatus === "connected"
+                  ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                  : "border-rose-500/20 bg-rose-500/10 text-rose-400"
+              }
+              `}
+            >
+
+              <div className="relative flex h-3 w-3">
+
+                {backendStatus === "checking" && (
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-zinc-500 border-t-zinc-300"></span>
+                )}
+
+                {backendStatus === "connected" && (
+                  <>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
+                  </>
+                )}
+
+                {backendStatus === "offline" && (
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-rose-500"></span>
+                )}
+
+              </div>
+
+              <span className="font-semibold">
+
+                {backendStatus === "checking"
+                  ? "Checking Backend..."
+                  : backendStatus === "connected"
+                  ? "Backend Connected"
+                  : "Backend Offline"}
+
+              </span>
+
+            </div>
+
+          </div>
+
         </div>
+
+      </section>
+
+            {/* ================= FEATURES ================= */}
+
+      <section
+        id="features"
+        className="mx-auto max-w-7xl px-6 py-24"
+      >
+        <div className="text-center">
+
+          <h2 className="text-4xl md:text-5xl font-bold">
+            Why Choose{" "}
+            <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+              StudyFlow AI
+            </span>
+            ?
+          </h2>
+
+          <p className="mt-5 text-lg text-zinc-400">
+            Everything you need to study smarter and faster.
+          </p>
+
+        </div>
+
+        <div className="mt-16 grid gap-8 md:grid-cols-3">
+
+          {/* Card 1 */}
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:border-indigo-500">
+
+            <div className="text-5xl">📄</div>
+
+            <h3 className="mt-6 text-2xl font-bold">
+              Upload PDFs
+            </h3>
+
+            <p className="mt-4 leading-7 text-zinc-400">
+              Upload textbooks, handwritten notes, assignments and lecture slides effortlessly.
+            </p>
+
+          </div>
+
+          {/* Card 2 */}
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:border-purple-500">
+
+            <div className="text-5xl">🤖</div>
+
+            <h3 className="mt-6 text-2xl font-bold">
+              AI Generated Notes
+            </h3>
+
+            <p className="mt-4 leading-7 text-zinc-400">
+              Let AI summarize your study material into clean, structured notes within seconds.
+            </p>
+
+          </div>
+
+          {/* Card 3 */}
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:border-cyan-500">
+
+            <div className="text-5xl">💬</div>
+
+            <h3 className="mt-6 text-2xl font-bold">
+              AI Chat Assistant
+            </h3>
+
+            <p className="mt-4 leading-7 text-zinc-400">
+              Ask questions about your uploaded notes and receive instant AI-powered explanations.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* ================= STATS ================= */}
+
+      <section className="mx-auto max-w-7xl px-6 py-10">
+
+        <div className="grid gap-8 rounded-3xl border border-white/10 bg-white/5 p-10 backdrop-blur-xl md:grid-cols-4">
+
+          <div className="text-center">
+            <h3 className="text-4xl font-bold text-indigo-400">
+              10x
+            </h3>
+            <p className="mt-2 text-zinc-400">
+              Faster Learning
+            </p>
+          </div>
+
+          <div className="text-center">
+            <h3 className="text-4xl font-bold text-purple-400">
+              AI
+            </h3>
+            <p className="mt-2 text-zinc-400">
+              Powered Notes
+            </p>
+          </div>
+
+          <div className="text-center">
+            <h3 className="text-4xl font-bold text-cyan-400">
+              PDF
+            </h3>
+            <p className="mt-2 text-zinc-400">
+              Upload Support
+            </p>
+          </div>
+
+          <div className="text-center">
+            <h3 className="text-4xl font-bold text-emerald-400">
+              24/7
+            </h3>
+            <p className="mt-2 text-zinc-400">
+              AI Assistance
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* ================= FOOTER ================= */}
+
+      <footer className="border-t border-white/10 py-10 mt-20">
+
+        <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+
+          <div>
+
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              StudyFlow AI
+            </h3>
+
+            <p className="mt-2 text-zinc-500">
+              AI-powered study companion built using Next.js, FastAPI & Gemini AI.
+            </p>
+
+          </div>
+
+          <p className="text-zinc-500">
+            © 2026 StudyFlow AI. All rights reserved.
+          </p>
+
+        </div>
+
+      </footer>
+
+      {/* ================= BACKGROUND ================= */}
+
+      <div className="fixed inset-0 -z-10 overflow-hidden bg-[#0a0a0a]">
+
+        <div className="absolute top-0 h-screen w-screen bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(99,102,241,0.18),rgba(255,255,255,0))]" />
+
+        <div className="absolute bottom-0 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-cyan-500/5 blur-[120px]" />
+
       </div>
 
-      {/* Decorative Background Elements */}
-      <div className="fixed inset-0 -z-10 h-full w-full bg-[#0a0a0a]">
-        <div className="absolute top-0 z-[-2] h-screen w-screen bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),rgba(255,255,255,0))]"></div>
-      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { getProfile, uploadFile, askQuestion } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
