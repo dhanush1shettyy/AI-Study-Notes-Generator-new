@@ -30,6 +30,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
     return new_user
 
+
 @router.post("/login")
 def login(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
