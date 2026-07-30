@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import HistoryModal from "./HistoryModal";
 import {
   getProfile,
   uploadPDF,
   generateNotes,
   askQuestion,
   getStats,
+  getNotesForDocument,
+  getChatHistory,
 } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -26,22 +29,20 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const [user, setUser] = useState<any>(null);
-
+  const [showHistory, setShowHistory] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // The uploaded document record returned by the backend
   const [uploadedDoc, setUploadedDoc] = useState<any>(null);
 
-  // The generated note for that document
   const [note, setNote] = useState<any>(null);
   const [generatingNotes, setGeneratingNotes] = useState(false);
 
   const [question, setQuestion] = useState("");
   const [asking, setAsking] = useState(false);
-const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]>([]);
 
   const [stats, setStats] = useState({
     total_documents: 0,
@@ -96,7 +97,6 @@ const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]
       setProgress(100);
       toast.success("File uploaded successfully!");
 
-      // Fixes the "count resets on refresh" bug — pulls the real count from the DB
       await refreshStats();
     } catch (error) {
       console.error(error);
@@ -169,6 +169,34 @@ const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]
     }
   };
 
+  const handleSelectHistoryDocument = async (doc: any) => {
+    setShowHistory(false);
+    setUploadedDoc(doc);
+    setNote(null);
+    setMessages([]);
+
+    try {
+      const notes = await getNotesForDocument(doc.id);
+      if (Array.isArray(notes) && notes.length > 0) {
+        setNote(notes[0]);
+      }
+
+      const history = await getChatHistory(doc.id);
+      if (Array.isArray(history)) {
+        const converted = history.map((m: any) => ({
+          role: m.role === "user" ? "user" : "ai",
+          text: m.content,
+        }));
+        setMessages(converted);
+      }
+
+      toast.success(`Loaded ${doc.filename}`);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load document history.");
+    }
+  };
+
   const copyNotes = () => {
     if (!note?.content) return;
     navigator.clipboard.writeText(note.content);
@@ -218,13 +246,22 @@ const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]
             </p>
           </div>
 
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 rounded-xl bg-red-500 px-6 py-3 font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-red-600"
-          >
-            <FaSignOutAlt />
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowHistory(true)}
+              className="flex items-center gap-2 rounded-xl bg-zinc-800 px-6 py-3 font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-zinc-700"
+            >
+              📚 History
+            </button>
+
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 rounded-xl bg-red-500 px-6 py-3 font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-red-600"
+            >
+              <FaSignOutAlt />
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* User Card */}
@@ -240,7 +277,7 @@ const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]
           </div>
         )}
 
-        {/* Stats Row — now pulled live from the database, survives refresh */}
+        {/* Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="rounded-3xl bg-gradient-to-br from-indigo-600/20 to-indigo-900/20 border border-indigo-500/20 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 shadow-lg">
             <div className="flex items-center justify-between">
@@ -358,7 +395,6 @@ const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]
             </div>
           )}
 
-          {/* Once a document is uploaded, show the Generate Notes step */}
           {uploadedDoc && !uploading && (
             <div className="mt-8 rounded-2xl border border-indigo-500/20 bg-zinc-900 p-6">
               <p className="text-gray-300 mb-4">
@@ -498,6 +534,13 @@ const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]
           </div>
         )}
       </div>
+
+      {showHistory && (
+        <HistoryModal
+          onClose={() => setShowHistory(false)}
+          onSelectDocument={handleSelectHistoryDocument}
+        />
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from .database import get_db
 from .models import User
-from .schemas import UserCreate, UserResponse
+from .schemas import UserCreate, UserLogin, UserResponse
 from .security import hash_password
 from .security import verify_password
 from .jwt_handler import create_access_token
@@ -32,7 +32,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login")
-def login(user: UserCreate, db: Session = Depends(get_db)):
+def login(user: UserLogin, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
 
     if not existing_user:
