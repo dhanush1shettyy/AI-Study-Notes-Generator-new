@@ -23,6 +23,9 @@ import {
   FaFileAlt,
   FaStickyNote,
   FaCheckCircle,
+  FaHistory,
+  FaPaperPlane,
+  FaDownload,
 } from "react-icons/fa";
 
 export default function DashboardPage() {
@@ -184,8 +187,8 @@ export default function DashboardPage() {
       const history = await getChatHistory(doc.id);
       if (Array.isArray(history)) {
         const converted = history.map((m: any) => ({
-          role: m.role === "user" ? "user" : "ai",
-          text: m.content,
+          role: (m.role === "user" ? "user" : "ai") as "user" | "ai",
+          text: m.content as string,
         }));
         setMessages(converted);
       }
@@ -226,312 +229,356 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-black via-zinc-950 to-indigo-950 text-white">
-      {/* Background Glow */}
-      <div className="absolute inset-0">
-        <div className="absolute -top-60 -left-40 h-[500px] w-[500px] rounded-full bg-purple-600/20 blur-[160px]" />
-        <div className="absolute top-20 right-0 h-[450px] w-[450px] rounded-full bg-blue-600/20 blur-[160px]" />
-        <div className="absolute bottom-0 left-1/2 h-[350px] w-[350px] -translate-x-1/2 rounded-full bg-indigo-500/20 blur-[140px]" />
+    <div className="relative min-h-screen bg-[#07080d] text-white">
+      {/* Grid paper texture */}
+      <div
+        className="pointer-events-none fixed inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
+
+      {/* Grain overlay */}
+      <div
+        className="pointer-events-none fixed inset-0 opacity-[0.05] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+        }}
+      />
+
+      {/* Ambient glows */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -top-32 left-1/4 h-[520px] w-[520px] rounded-full bg-amber-500/20 blur-[170px]" />
+        <div className="absolute top-1/3 -right-32 h-[460px] w-[460px] rounded-full bg-teal-500/20 blur-[170px]" />
+        <div className="absolute bottom-0 left-0 h-[380px] w-[380px] rounded-full bg-fuchsia-500/10 blur-[150px]" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto p-10">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-5xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              AI Study Notes Generator
-            </h1>
-            <p className="text-gray-400 mt-3 text-lg">
-              Upload your study material and generate clean, structured notes in seconds.
-            </p>
+      {/* ============ TOP BAR ============ */}
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#07080d]/90 shadow-lg shadow-black/40 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-10">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/25 to-amber-400/5 font-serif text-xl font-bold text-amber-300 shadow-lg shadow-amber-500/10">
+              SF
+            </div>
+            <div className="leading-tight">
+              <p className="font-serif text-lg font-bold">StudyFlow</p>
+              <p className="text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+                Dashboard
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowHistory(true)}
-              className="flex items-center gap-2 rounded-xl bg-zinc-800 px-6 py-3 font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-zinc-700"
+              className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-zinc-200 shadow-md shadow-black/20 transition hover:border-amber-400/50 hover:bg-white/10"
             >
-              📚 History
+              <FaHistory className="text-amber-300" />
+              History
             </button>
 
             <button
               onClick={logout}
-              className="flex items-center gap-2 rounded-xl bg-red-500 px-6 py-3 font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-red-600"
+              className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-300 shadow-md shadow-black/20 transition hover:bg-red-500/20"
             >
               <FaSignOutAlt />
-              Logout
+              Log out
             </button>
           </div>
         </div>
+      </header>
 
-        {/* User Card */}
-        {user && (
-          <div className="mb-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-xl">
-            <h2 className="mb-3 text-2xl font-bold">👋 Welcome Back</h2>
-            <p className="text-gray-300">
-              <span className="font-semibold">Name:</span> {user.name}
-            </p>
-            <p className="text-gray-300">
-              <span className="font-semibold">Email:</span> {user.email}
-            </p>
-          </div>
-        )}
-
-        {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="rounded-3xl bg-gradient-to-br from-indigo-600/20 to-indigo-900/20 border border-indigo-500/20 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Uploaded Files</p>
-                <h2 className="text-3xl font-bold mt-2">
-                  {stats.total_documents}
-                </h2>
-              </div>
-              <FaFileAlt className="text-4xl text-indigo-400" />
-            </div>
-          </div>
-
-          <div className="rounded-3xl bg-gradient-to-br from-purple-600/20 to-purple-900/20 border border-purple-500/20 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Notes Generated</p>
-                <h2 className="text-3xl font-bold mt-2">
-                  {stats.total_notes}
-                </h2>
-              </div>
-              <FaStickyNote className="text-4xl text-purple-400" />
-            </div>
-          </div>
-
-          <div className="rounded-3xl bg-gradient-to-br from-green-600/20 to-green-900/20 border border-green-500/20 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">AI Status</p>
-                <h2 className="text-3xl font-bold mt-2 text-green-400">
-                  Ready
-                </h2>
-              </div>
-              <FaCheckCircle className="text-4xl text-green-400" />
-            </div>
-          </div>
-        </div>
-
-        {/* Upload Card */}
-        <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-xl">
-          <h2 className="mb-6 text-3xl font-bold flex items-center gap-3">
-            <FaFileUpload />
-            Upload Study Material
-          </h2>
-
+      <div className="relative z-10 mx-auto max-w-6xl px-6 py-10 md:px-10">
+        {/* ============ HERO ============ */}
+        <section className="relative mb-10 overflow-hidden rounded-3xl border border-amber-400/20 bg-gradient-to-br from-zinc-900/80 via-zinc-900/40 to-teal-950/30 p-10 shadow-2xl shadow-black/60 md:p-14">
+          {/* page-corner fold */}
           <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={(e) => {
-              e.preventDefault();
-              setDragging(false);
+            className="absolute right-0 top-0 h-20 w-20 bg-gradient-to-bl from-amber-400/40 via-amber-400/10 to-transparent"
+            style={{ clipPath: "polygon(100% 0, 0 0, 100% 100%)" }}
+          />
 
-              if (e.dataTransfer.files.length > 0) {
-                setSelectedFile(e.dataTransfer.files[0]);
-              }
-            }}
-            className={`rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-300 cursor-pointer ${
-              dragging
-                ? "border-indigo-500 bg-indigo-500/10 scale-[1.02]"
-                : "border-zinc-700 bg-zinc-900/40"
-            }`}
-          >
-            <input
-              type="file"
-              accept=".pdf,.docx"
-              id="fileUpload"
-              hidden
-              onChange={(e) => {
-                if (e.target.files) {
-                  setSelectedFile(e.target.files[0]);
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-amber-300">
+            Welcome back{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
+          </p>
+
+          <h1 className="max-w-3xl font-serif text-4xl font-bold leading-tight md:text-6xl">
+            Turn material into{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10">clear notes</span>
+              <span className="absolute inset-x-0 bottom-2 -z-0 h-4 -rotate-1 bg-amber-400/40 md:h-6" />
+            </span>
+            .
+          </h1>
+
+          <p className="mt-6 max-w-xl text-base text-zinc-400 md:text-lg">
+            Upload a PDF or DOCX, generate structured notes in seconds, and
+            ask the AI anything about it.
+          </p>
+
+          {user && (
+            <p className="mt-6 text-sm text-zinc-500">
+              Signed in as{" "}
+              <span className="text-zinc-300">{user.email}</span>
+            </p>
+          )}
+        </section>
+
+        {/* ============ STATS ============ */}
+        <section className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div className="rounded-2xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-6 shadow-xl shadow-black/30 transition hover:-translate-y-1 hover:shadow-indigo-500/10">
+            <FaFileAlt className="mb-4 text-2xl text-indigo-300" />
+            <p className="font-serif text-4xl font-bold">
+              {stats.total_documents}
+            </p>
+            <p className="mt-1 text-sm text-zinc-500">Documents uploaded</p>
+          </div>
+
+          <div className="rounded-2xl border border-amber-400/20 bg-gradient-to-br from-amber-500/10 to-transparent p-6 shadow-xl shadow-black/30 transition hover:-translate-y-1 hover:shadow-amber-500/10">
+            <FaStickyNote className="mb-4 text-2xl text-amber-300" />
+            <p className="font-serif text-4xl font-bold">
+              {stats.total_notes}
+            </p>
+            <p className="mt-1 text-sm text-zinc-500">Notes generated</p>
+          </div>
+
+          <div className="rounded-2xl border border-teal-400/20 bg-gradient-to-br from-teal-500/10 to-transparent p-6 shadow-xl shadow-black/30 transition hover:-translate-y-1 hover:shadow-teal-500/10">
+            <FaCheckCircle className="mb-4 text-2xl text-teal-300" />
+            <p className="font-serif text-4xl font-bold text-teal-300">
+              Ready
+            </p>
+            <p className="mt-1 text-sm text-zinc-500">AI status</p>
+          </div>
+        </section>
+
+        {/* ============ UPLOAD ============ */}
+        <section className="mb-10 border-l-2 border-dashed border-amber-400/30 pl-6">
+          <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-7 shadow-2xl shadow-black/40 md:p-9">
+            <h2 className="mb-6 flex items-center gap-3 font-serif text-2xl font-bold md:text-3xl">
+              <FaFileUpload className="text-amber-300" />
+              Upload study material
+            </h2>
+
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragging(false);
+
+                if (e.dataTransfer.files.length > 0) {
+                  setSelectedFile(e.dataTransfer.files[0]);
                 }
               }}
-            />
+              className={`rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-300 ${
+                dragging
+                  ? "scale-[1.01] border-amber-400 bg-amber-400/10 shadow-lg shadow-amber-500/10"
+                  : "border-zinc-700 bg-black/30"
+              }`}
+            >
+              <input
+                type="file"
+                accept=".pdf,.docx"
+                id="fileUpload"
+                hidden
+                onChange={(e) => {
+                  if (e.target.files) {
+                    setSelectedFile(e.target.files[0]);
+                  }
+                }}
+              />
 
-            <label htmlFor="fileUpload" className="cursor-pointer">
-              <div className="text-6xl mb-4">📄</div>
-              <h3 className="text-2xl font-bold">
-                Drag &amp; Drop your PDF or DOCX here
-              </h3>
-              <p className="mt-2 text-gray-400">
-                or click to browse your computer
-              </p>
-            </label>
-          </div>
-
-          {selectedFile && (
-            <div className="mt-4 rounded-xl bg-zinc-900 p-4 border border-zinc-700">
-              <p className="font-semibold">Selected File</p>
-              <p className="text-gray-400 mt-1">{selectedFile.name}</p>
+              <label htmlFor="fileUpload" className="cursor-pointer">
+                <FaFileAlt className="mx-auto mb-4 text-4xl text-zinc-600" />
+                <h3 className="text-lg font-semibold text-zinc-200">
+                  Drag &amp; drop a PDF or DOCX
+                </h3>
+                <p className="mt-1 text-sm text-zinc-500">
+                  or click to browse your computer
+                </p>
+              </label>
             </div>
-          )}
 
-          <button
-            onClick={handleUpload}
-            disabled={uploading || !selectedFile}
-            className="mt-6 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-4 text-lg font-bold transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl disabled:opacity-50 disabled:hover:scale-100"
-          >
-            {uploading ? "⬆️ Uploading..." : "⬆️ Upload Document"}
-          </button>
-
-          {uploading && (
-            <div className="mt-6">
-              <div className="h-3 w-full rounded-full bg-zinc-800 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
+            {selectedFile && (
+              <div className="mt-4 flex items-center justify-between rounded-xl border border-zinc-800 bg-black/40 px-4 py-3">
+                <p className="text-sm text-zinc-300">{selectedFile.name}</p>
+                <span className="text-xs text-zinc-500">selected</span>
               </div>
-              <p className="mt-2 text-sm text-gray-400">
-                {progress}% Completed
-              </p>
-            </div>
-          )}
+            )}
 
-          {uploadedDoc && !uploading && (
-            <div className="mt-8 rounded-2xl border border-indigo-500/20 bg-zinc-900 p-6">
-              <p className="text-gray-300 mb-4">
-                📄 <span className="font-semibold">{uploadedDoc.filename}</span>{" "}
-                uploaded. Ready to generate study notes.
-              </p>
+            <button
+              onClick={handleUpload}
+              disabled={uploading || !selectedFile}
+              className="mt-6 w-full rounded-xl bg-gradient-to-r from-amber-400 to-amber-300 py-3.5 text-sm font-bold text-black shadow-lg shadow-amber-500/20 transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:bg-none disabled:text-zinc-400 disabled:shadow-none"
+            >
+              {uploading ? "Uploading…" : "Upload document"}
+            </button>
+
+            {uploading && (
+              <div className="mt-5">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-200 transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-zinc-500">
+                  {progress}% complete
+                </p>
+              </div>
+            )}
+
+            {uploadedDoc && !uploading && (
+              <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 shadow-inner">
+                <p className="mb-4 text-sm text-zinc-300">
+                  <span className="font-semibold text-white">
+                    {uploadedDoc.filename}
+                  </span>{" "}
+                  is ready. Generate structured notes from it.
+                </p>
+
+                <button
+                  onClick={handleGenerateNotes}
+                  disabled={generatingNotes}
+                  className="w-full rounded-xl border border-teal-400/40 bg-gradient-to-r from-teal-400/20 to-teal-400/5 py-3 text-sm font-bold text-teal-200 shadow-md shadow-teal-500/10 transition hover:from-teal-400/30 hover:to-teal-400/10 disabled:opacity-50"
+                >
+                  {generatingNotes ? "Generating notes…" : "Generate study notes"}
+                </button>
+
+                {generatingNotes && (
+                  <div className="mt-5 flex items-center gap-3">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-teal-400 border-t-transparent" />
+                    <p className="text-sm text-zinc-500">
+                      Reading the document and organizing key points…
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* ============ NOTES RESULT ============ */}
+        {note && (
+          <section className="mb-10 border-l-2 border-dashed border-amber-400/30 pl-6">
+            <div className="overflow-hidden rounded-3xl border border-amber-400/20 bg-gradient-to-b from-zinc-900/70 to-black/50 shadow-2xl shadow-amber-500/5">
+              <div className="flex items-center justify-between border-b border-white/10 bg-amber-400/10 px-6 py-4 md:px-8">
+                <div className="flex items-center gap-3">
+                  <FaRobot className="text-lg text-amber-300" />
+                  <div>
+                    <h3 className="font-serif text-lg font-bold md:text-xl">
+                      Study notes
+                    </h3>
+                    <p className="text-xs text-zinc-500">
+                      {uploadedDoc?.filename}
+                    </p>
+                  </div>
+                </div>
+                <span className="rounded-full border border-teal-400/40 bg-teal-400/10 px-3 py-1 text-xs font-semibold text-teal-200 shadow-sm shadow-teal-500/10">
+                  Ready
+                </span>
+              </div>
+
+              <div className="prose prose-invert max-w-none p-8 prose-headings:font-serif md:p-10">
+                <ReactMarkdown>{note.content}</ReactMarkdown>
+              </div>
+
+              <div className="flex flex-wrap gap-3 border-t border-white/10 px-8 py-6 md:px-10">
+                <button
+                  onClick={copyNotes}
+                  className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-zinc-200 shadow-md shadow-black/20 transition hover:bg-white/10"
+                >
+                  <FaCopy />
+                  Copy to clipboard
+                </button>
+
+                <button
+                  onClick={downloadPDF}
+                  className="flex items-center gap-2 rounded-lg border border-amber-400/40 bg-gradient-to-r from-amber-400/20 to-amber-400/5 px-5 py-2.5 text-sm font-semibold text-amber-200 shadow-md shadow-amber-500/10 transition hover:from-amber-400/30 hover:to-amber-400/10"
+                >
+                  <FaDownload />
+                  Download PDF
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ============ ASK AI ============ */}
+        {uploadedDoc && (
+          <section className="border-l-2 border-dashed border-amber-400/30 pl-6">
+            <div className="rounded-3xl border border-teal-400/15 bg-gradient-to-b from-zinc-900/60 to-teal-950/20 p-7 shadow-2xl shadow-black/40 md:p-9">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="font-serif text-2xl font-bold md:text-3xl">
+                  Ask about this document
+                </h2>
+
+                <button
+                  onClick={newChat}
+                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-zinc-300 shadow-sm transition hover:bg-white/10"
+                >
+                  New chat
+                </button>
+              </div>
+
+              <textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Ask anything about the uploaded document…"
+                className="h-28 w-full resize-none rounded-xl border border-zinc-700 bg-black/30 p-4 text-sm placeholder:text-zinc-600 focus:border-amber-400/60 focus:outline-none focus:ring-1 focus:ring-amber-400/30"
+              />
 
               <button
-                onClick={handleGenerateNotes}
-                disabled={generatingNotes}
-                className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 py-3 font-bold transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
+                onClick={handleAskQuestion}
+                disabled={asking || !question.trim()}
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-300 py-3.5 text-sm font-bold text-black shadow-lg shadow-amber-500/20 transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:bg-none disabled:text-zinc-400 disabled:shadow-none"
               >
-                {generatingNotes ? "🤖 Generating notes..." : "✨ Generate Study Notes"}
+                <FaPaperPlane className="text-xs" />
+                {asking ? "Thinking…" : "Ask AI"}
               </button>
 
-              {generatingNotes && (
-                <div className="mt-6 flex items-center gap-4">
-                  <div className="h-8 w-8 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
-                  <p className="text-gray-400">
-                    Extracting text and organizing it into notes...
-                  </p>
+              {asking && (
+                <div className="mt-5 flex items-center gap-3 rounded-xl border border-white/10 bg-black/30 p-5">
+                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-200">
+                      Reading your document
+                    </p>
+                    <p className="text-xs text-zinc-500">
+                      Finding the most relevant answer.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {messages.length > 0 && (
+                <div className="mt-6 space-y-3">
+                  {messages.map((msg, index) => (
+                    <div
+                      key={index}
+                      className={`rounded-xl p-5 shadow-md shadow-black/20 ${
+                        msg.role === "user"
+                          ? "border border-amber-400/25 bg-amber-400/5"
+                          : "border border-teal-400/15 bg-black/30"
+                      }`}
+                    >
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                        {msg.role === "user" ? "You" : "AI"}
+                      </p>
+                      <div className="prose prose-invert max-w-none prose-p:my-2">
+                        <ReactMarkdown>{msg.text}</ReactMarkdown>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
-          )}
-        </div>
-
-        {/* Notes Result */}
-        {note && (
-          <div className="mt-10 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-              <div>
-                <h3 className="text-xl font-bold flex items-center gap-2">
-                  <FaRobot />
-                  Study Notes
-                </h3>
-                <p className="text-sm text-gray-400">
-                  📄 {uploadedDoc?.filename}
-                </p>
-              </div>
-              <span className="rounded-full bg-indigo-600/20 px-4 py-2 text-sm text-indigo-300">
-                Ready
-              </span>
-            </div>
-
-            <div className="prose prose-invert max-w-none p-8">
-              <ReactMarkdown>{note.content}</ReactMarkdown>
-            </div>
-
-            <div className="flex flex-wrap gap-4 px-8 pb-8">
-              <button
-                onClick={copyNotes}
-                className="flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-semibold transition-all duration-300 hover:scale-105 hover:bg-green-700"
-              >
-                <FaCopy />
-                Copy to Clipboard
-              </button>
-
-              <button
-                onClick={downloadPDF}
-                className="rounded-xl bg-red-600 px-6 py-3 font-semibold transition-all duration-300 hover:scale-105 hover:bg-red-700"
-              >
-                📄 Download PDF
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Ask AI About Document */}
-        {uploadedDoc && (
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-xl">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-3xl font-bold">
-                💬 Ask AI About This Document
-              </h2>
-
-              <button
-                onClick={newChat}
-                className="rounded-xl bg-zinc-800 px-5 py-2 font-semibold transition hover:bg-zinc-700"
-              >
-                + New Chat
-              </button>
-            </div>
-
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Ask anything about the uploaded document..."
-              className="w-full h-32 resize-none rounded-xl border border-zinc-700 bg-zinc-900 p-4 focus:border-indigo-500 focus:outline-none"
-            />
-
-            <button
-              onClick={handleAskQuestion}
-              disabled={asking || !question.trim()}
-              className="mt-5 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-4 font-bold transition hover:scale-[1.02] disabled:opacity-50"
-            >
-              {asking ? "🤖 AI is Thinking..." : "Ask AI"}
-            </button>
-
-            {asking && (
-              <div className="mt-6 rounded-2xl border border-indigo-500/20 bg-zinc-900 p-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
-                  <div>
-                    <h3 className="font-bold text-lg">
-                      Analyzing your document...
-                    </h3>
-                    <p className="text-gray-400">
-                      Finding the most relevant answer from your uploaded document.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {messages.length > 0 && (
-              <div className="mt-8 space-y-4">
-                {messages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`rounded-2xl p-5 ${
-                      msg.role === "user"
-                        ? "bg-indigo-600/20 border border-indigo-500"
-                        : "bg-zinc-900 border border-zinc-700"
-                    }`}
-                  >
-                    <p className="font-bold mb-2">
-                      {msg.role === "user" ? "🧑 You" : "🤖 AI"}
-                    </p>
-                    <div className="prose prose-invert max-w-none">
-                      <ReactMarkdown>{msg.text}</ReactMarkdown>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          </section>
         )}
       </div>
 

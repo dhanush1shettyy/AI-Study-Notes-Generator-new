@@ -1,0 +1,15 @@
+[33mcommit 72f9b93cd8b774b962cc461bb4545f1755212a37[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Dhanush U Shetty <shettydhanushu67@gmail.com>
+Date:   Fri Jul 31 11:10:55 2026 +0530
+
+    Add password validation, history view, and forgot password flow
+
+ backend/ai_study_notes.db                 | Bin [31m57344[m -> [32m65536[m bytes
+ backend/app/auth.py                       | 102 [32m++++++++++++[m[31m-[m
+ backend/app/email_service.py              |  35 [32m+++++[m
+ backend/app/models.py                     |  11 [32m+[m[31m-[m
+ backend/app/schemas.py                    |  22 [32m++[m[31m-[m
+ frontend/src/app/forgot-password/page.tsx | 236 [32m++++++++++++++++++++++++++++++[m
+ frontend/src/app/login/page.tsx           |   5 [32m+[m
+ frontend/src/app/register/page.tsx        |  59 [32m+++++[m[31m---[m
+ 8 files changed, 445 insertions(+), 25 deletions(-)
