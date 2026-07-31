@@ -92,6 +92,11 @@ export default function LoginPage() {
   </p>
 )}
 
+<p className="text-center text-sm">
+  <a href="/forgot-password" className="font-semibold text-indigo-400 hover:text-indigo-300 transition">
+    Forgot Password?
+  </a>
+</p>
 <p className="text-center text-sm text-zinc-300">
   Don't have an account?{" "}
   <a

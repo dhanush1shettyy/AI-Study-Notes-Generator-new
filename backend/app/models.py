@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
-
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
 from .database import Base
 
 
@@ -34,6 +34,15 @@ class Document(Base):
     notes = relationship("Note", back_populates="document", cascade="all, delete-orphan")
     chat_messages = relationship("ChatMessage", back_populates="document", cascade="all, delete-orphan")
 
+class PasswordResetCode(Base):
+    __tablename__ = "password_reset_codes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    code = Column(String, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class Note(Base):
     __tablename__ = "notes"

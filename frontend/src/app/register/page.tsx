@@ -15,30 +15,45 @@ export default function RegisterPage() {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (form.password !== confirmPassword) {
-      setMessage("Passwords do not match");
-      return;
+  if (form.password.length < 8) {
+    setMessage("Password must be at least 8 characters long");
+    return;
+  }
+  if (!/[a-zA-Z]/.test(form.password) || !/[0-9]/.test(form.password)) {
+    setMessage("Password must contain both letters and numbers");
+    return;
+  }
+  if (form.password !== confirmPassword) {
+    setMessage("Passwords do not match");
+    return;
+  }
+
+  const result = await registerUser(form);
+
+  if (result.id) {
+    setMessage("✅ Registration Successful! Redirecting to login...");
+    setForm({ name: "", email: "", password: "" });
+    setConfirmPassword("");
+    setTimeout(() => {
+      router.push("/login");
+    }, 1500);
+  } else {
+    // FastAPI validation errors come back as an array of objects; plain
+    // errors (like "Email already registered") come back as a string.
+    let errorMessage = "Registration Failed";
+
+    if (typeof result.detail === "string") {
+      errorMessage = result.detail;
+    } else if (Array.isArray(result.detail) && result.detail.length > 0) {
+      errorMessage = result.detail[0].msg || errorMessage;
     }
 
-    const result = await registerUser(form);
-
-    if (result.id) {
-      setMessage("✅ Registration Successful! Redirecting to login...");
-
-      setForm({ name: "", email: "", password: "" });
-      setConfirmPassword("");
-
-      setTimeout(() => {
-        router.push("/login");
-      }, 1500);
-    } else {
-      setMessage(result.detail || "Registration Failed");
-    }
-  };
-
+    setMessage(errorMessage);
+  }
+};
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950 to-black flex items-center justify-center px-4">
       {/* Background Glow */}
