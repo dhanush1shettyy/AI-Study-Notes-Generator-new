@@ -105,3 +105,15 @@ class ResetPasswordRequest(BaseModel):
         if not any(char.isdigit() for char in value):
             raise ValueError("Password must contain at least one number")
         return value
+
+
+class FlashcardResponse(BaseModel):
+    id: int
+    user_id: int
+    document_id: int
+    question: str
+    answer: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

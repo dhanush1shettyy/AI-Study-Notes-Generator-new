@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import HistoryModal from "./HistoryModal";
+import Flashcards from "./Flashcards";
 import {
   getProfile,
   uploadPDF,
@@ -26,6 +27,9 @@ import {
   FaHistory,
   FaPaperPlane,
   FaDownload,
+  FaEdit,
+  FaSave,
+  FaUndo,
 } from "react-icons/fa";
 
 export default function DashboardPage() {
@@ -42,6 +46,9 @@ export default function DashboardPage() {
 
   const [note, setNote] = useState<any>(null);
   const [generatingNotes, setGeneratingNotes] = useState(false);
+  const [noteStyle, setNoteStyle] = useState<"concise" | "detailed" | "exam">("detailed");
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [draftNotes, setDraftNotes] = useState("");
 
   const [question, setQuestion] = useState("");
   const [asking, setAsking] = useState(false);
@@ -119,7 +126,7 @@ export default function DashboardPage() {
     try {
       setGeneratingNotes(true);
 
-      const result = await generateNotes(uploadedDoc.id);
+      const result = await generateNotes(uploadedDoc.id, noteStyle);
 
       if (!result.id) {
         toast.error(result.detail || "Failed to generate notes.");
@@ -127,6 +134,7 @@ export default function DashboardPage() {
       }
 
       setNote(result);
+      setIsEditingNotes(false);
       toast.success("Study notes generated!");
 
       await refreshStats();
@@ -176,6 +184,7 @@ export default function DashboardPage() {
     setShowHistory(false);
     setUploadedDoc(doc);
     setNote(null);
+    setIsEditingNotes(false);
     setMessages([]);
 
     try {
@@ -198,6 +207,25 @@ export default function DashboardPage() {
       console.error(error);
       toast.error("Failed to load document history.");
     }
+  };
+
+  const startEditingNotes = () => {
+    setDraftNotes(note?.content || "");
+    setIsEditingNotes(true);
+  };
+
+  const cancelEditingNotes = () => {
+    setIsEditingNotes(false);
+    setDraftNotes("");
+  };
+
+  const saveEditedNotes = () => {
+    setNote((prev: any) => ({ ...prev, content: draftNotes }));
+    setIsEditingNotes(false);
+    toast.success("Notes updated for this session.");
+    // Note: this saves locally only. Reloading or reopening from History
+    // will show the original AI-generated version unless a backend
+    // update endpoint is wired up.
   };
 
   const copyNotes = () => {
@@ -442,6 +470,34 @@ export default function DashboardPage() {
                   is ready. Generate structured notes from it.
                 </p>
 
+                <div className="mb-4">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Note style
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(
+                      [
+                        { value: "concise", label: "Concise" },
+                        { value: "detailed", label: "Detailed" },
+                        { value: "exam", label: "Exam-focused" },
+                      ] as const
+                    ).map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => setNoteStyle(option.value)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
+                          noteStyle === option.value
+                            ? "border-amber-400/60 bg-amber-400/15 text-amber-200"
+                            : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <button
                   onClick={handleGenerateNotes}
                   disabled={generatingNotes}
@@ -479,19 +535,65 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-                <span className="rounded-full border border-teal-400/40 bg-teal-400/10 px-3 py-1 text-xs font-semibold text-teal-200 shadow-sm shadow-teal-500/10">
-                  Ready
-                </span>
+                <div className="flex items-center gap-3">
+                  {!isEditingNotes && (
+                    <span className="rounded-full border border-teal-400/40 bg-teal-400/10 px-3 py-1 text-xs font-semibold text-teal-200 shadow-sm shadow-teal-500/10">
+                      Ready
+                    </span>
+                  )}
+                  {!isEditingNotes ? (
+                    <button
+                      onClick={startEditingNotes}
+                      className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:bg-white/10"
+                    >
+                      <FaEdit />
+                      Edit
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={saveEditedNotes}
+                        className="flex items-center gap-2 rounded-lg border border-teal-400/40 bg-teal-400/10 px-3 py-1.5 text-xs font-semibold text-teal-200 transition hover:bg-teal-400/20"
+                      >
+                        <FaSave />
+                        Save
+                      </button>
+                      <button
+                        onClick={cancelEditingNotes}
+                        className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-300 transition hover:bg-white/10"
+                      >
+                        <FaUndo />
+                        Cancel
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
-              <div className="prose prose-invert max-w-none p-8 prose-headings:font-serif md:p-10">
-                <ReactMarkdown>{note.content}</ReactMarkdown>
-              </div>
+              {isEditingNotes ? (
+                <div className="p-8 md:p-10">
+                  <textarea
+                    value={draftNotes}
+                    onChange={(e) => setDraftNotes(e.target.value)}
+                    className="h-96 w-full resize-y rounded-xl border border-amber-400/30 bg-black/30 p-4 font-mono text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-amber-400/60 focus:outline-none focus:ring-1 focus:ring-amber-400/30"
+                    placeholder="Edit your notes (Markdown supported)…"
+                  />
+                  <p className="mt-2 text-xs text-zinc-500">
+                    Editing this session only — save, then copy or download
+                    to keep your changes.
+                  </p>
+                </div>
+              ) : (
+                <div className="prose prose-invert max-w-none p-8 prose-headings:font-serif md:p-10">
+                  <ReactMarkdown>{note.content}</ReactMarkdown>
+                </div>
+              )}
 
               <div className="flex flex-wrap gap-3 border-t border-white/10 px-8 py-6 md:px-10">
                 <button
                   onClick={copyNotes}
-                  className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-zinc-200 shadow-md shadow-black/20 transition hover:bg-white/10"
+                  disabled={isEditingNotes}
+                  className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-zinc-200 shadow-md shadow-black/20 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <FaCopy />
                   Copy to clipboard
@@ -499,7 +601,8 @@ export default function DashboardPage() {
 
                 <button
                   onClick={downloadPDF}
-                  className="flex items-center gap-2 rounded-lg border border-amber-400/40 bg-gradient-to-r from-amber-400/20 to-amber-400/5 px-5 py-2.5 text-sm font-semibold text-amber-200 shadow-md shadow-amber-500/10 transition hover:from-amber-400/30 hover:to-amber-400/10"
+                  disabled={isEditingNotes}
+                  className="flex items-center gap-2 rounded-lg border border-amber-400/40 bg-gradient-to-r from-amber-400/20 to-amber-400/5 px-5 py-2.5 text-sm font-semibold text-amber-200 shadow-md shadow-amber-500/10 transition hover:from-amber-400/30 hover:to-amber-400/10 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <FaDownload />
                   Download PDF
@@ -579,6 +682,13 @@ export default function DashboardPage() {
               )}
             </div>
           </section>
+        )}
+
+        {/* ============ FLASHCARDS ============ */}
+        {uploadedDoc && (
+          <div className="mt-10">
+            <Flashcards documentId={uploadedDoc.id} filename={uploadedDoc.filename} />
+          </div>
         )}
       </div>
 

@@ -17,6 +17,7 @@ class User(Base):
     documents = relationship("Document", back_populates="owner", cascade="all, delete-orphan")
     notes = relationship("Note", back_populates="owner", cascade="all, delete-orphan")
     chat_messages = relationship("ChatMessage", back_populates="owner", cascade="all, delete-orphan")
+    flashcards = relationship("Flashcard", back_populates="owner", cascade="all, delete-orphan")
 
 
 class Document(Base):
@@ -33,6 +34,7 @@ class Document(Base):
     owner = relationship("User", back_populates="documents")
     notes = relationship("Note", back_populates="document", cascade="all, delete-orphan")
     chat_messages = relationship("ChatMessage", back_populates="document", cascade="all, delete-orphan")
+    flashcards = relationship("Flashcard", back_populates="document", cascade="all, delete-orphan")
 
 class PasswordResetCode(Base):
     __tablename__ = "password_reset_codes"
@@ -72,3 +74,18 @@ class ChatMessage(Base):
 
     owner = relationship("User", back_populates="chat_messages")
     document = relationship("Document", back_populates="chat_messages")
+
+
+class Flashcard(Base):
+    __tablename__ = "flashcards"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+
+    question = Column(Text, nullable=False)
+    answer = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User", back_populates="flashcards")
+    document = relationship("Document", back_populates="flashcards")

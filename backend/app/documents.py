@@ -1,6 +1,7 @@
 import os
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 
 from .database import get_db
 from .models import Document, Note, User
@@ -10,6 +11,10 @@ from .file_utils import extract_text_from_file
 from .ai.ai import generate_notes
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
+
+
+class DocumentRename(BaseModel):
+    filename: str
 
 
 @router.get("/", response_model=list[DocumentResponse])
@@ -35,8 +40,39 @@ def get_document(document_id: int, db: Session = Depends(get_db), current_user: 
     return document
 
 
+@router.patch("/{document_id}", response_model=DocumentResponse)
+def rename_document(
+    document_id: int,
+    payload: DocumentRename,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    document = db.query(Document).filter(
+        Document.id == document_id,
+        Document.user_id == current_user.id,
+    ).first()
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    new_name = payload.filename.strip()
+    if not new_name:
+        raise HTTPException(status_code=400, detail="Filename cannot be empty")
+
+    document.filename = new_name
+    db.commit()
+    db.refresh(document)
+
+    return document
+
+
 @router.post("/{document_id}/generate-notes", response_model=NoteResponse)
-def generate_notes_for_document(document_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def generate_notes_for_document(
+    document_id: int,
+    style: str = Query(default="detailed", pattern="^(concise|detailed|exam)$"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     document = db.query(Document).filter(
         Document.id == document_id,
         Document.user_id == current_user.id,
@@ -50,7 +86,7 @@ def generate_notes_for_document(document_id: int, db: Session = Depends(get_db),
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to read document content")
 
-    notes_content = generate_notes(document_text)
+    notes_content = generate_notes(document_text, style=style)
 
     note = Note(
         user_id=current_user.id,

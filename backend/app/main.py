@@ -11,6 +11,7 @@ from .chat import router as chat_router
 from .documents import router as documents_router
 from .notes import router as notes_router
 from .stats import router as stats_router
+from .flashcards import router as flashcards_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -30,6 +31,7 @@ app.include_router(chat_router)
 app.include_router(documents_router)
 app.include_router(notes_router)
 app.include_router(stats_router)
+app.include_router(flashcards_router)
 
 
 @app.get("/")
