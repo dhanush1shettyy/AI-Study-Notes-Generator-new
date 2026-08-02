@@ -55,34 +55,56 @@ export default function RegisterPage() {
   }
 };
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950 to-black flex items-center justify-center px-4">
-      {/* Background Glow */}
-      <div className="absolute top-0 left-0 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-purple-600/20 blur-3xl"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.15),transparent_60%)]"></div>
+    <div className="relative min-h-screen overflow-hidden bg-[#07080d] flex items-center justify-center px-4">
+      <style>{`
+        @keyframes drift-a {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(60px, -40px) scale(1.15); }
+        }
+        @keyframes drift-b {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-50px, 50px) scale(1.1); }
+        }
+      `}</style>
 
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 text-center">
-        <h1 className="text-5xl font-extrabold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
-          AI Study Notes
-        </h1>
-        <p className="mt-2 text-zinc-400 text-lg">
-          Study Smarter. Learn Faster. Powered by AI.
-        </p>
+      {/* Grid texture */}
+      <div
+        className="pointer-events-none fixed inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
+
+      {/* Animated glows */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div
+          className="absolute -top-20 -left-20 h-96 w-96 rounded-full bg-amber-500/20 blur-[150px]"
+          style={{ animation: "drift-a 18s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-teal-500/20 blur-[150px]"
+          style={{ animation: "drift-b 22s ease-in-out infinite" }}
+        />
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="relative z-10 w-full max-w-md rounded-3xl border border-white/10 bg-white/10 backdrop-blur-2xl shadow-2xl p-8 space-y-6 transition-all duration-300"
+        className="relative z-10 w-full max-w-md rounded-3xl border border-amber-400/20 bg-zinc-900/70 backdrop-blur-2xl shadow-2xl shadow-black/60 p-8 space-y-6"
       >
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-extrabold text-white">Create Account</h1>
-          <p className="text-zinc-300">Join AI Study Notes Generator 🚀</p>
+        <div className="text-center space-y-3">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/25 to-amber-400/5 font-serif text-xl font-bold text-amber-300 shadow-lg shadow-amber-500/10">
+            SF
+          </div>
+          <h1 className="font-serif text-4xl font-bold text-white">Create account</h1>
+          <p className="text-zinc-400">Join StudyFlow 🚀</p>
         </div>
 
         <input
           type="text"
           placeholder="Full Name"
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-400 outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+          className="w-full rounded-xl border border-zinc-700 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-600 outline-none transition-all duration-300 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
@@ -90,7 +112,7 @@ export default function RegisterPage() {
         <input
           type="email"
           placeholder="Email Address"
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-400 outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+          className="w-full rounded-xl border border-zinc-700 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-600 outline-none transition-all duration-300 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
@@ -98,7 +120,7 @@ export default function RegisterPage() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-400 outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+          className="w-full rounded-xl border border-zinc-700 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-600 outline-none transition-all duration-300 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
@@ -106,14 +128,14 @@ export default function RegisterPage() {
         <input
           type="password"
           placeholder="Confirm Password"
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-400 outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+          className="w-full rounded-xl border border-zinc-700 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-600 outline-none transition-all duration-300 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
         <button
           type="submit"
-          className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-3 font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[0.98]"
+          className="w-full rounded-xl bg-amber-400 py-3 font-bold text-black shadow-lg shadow-amber-500/20 transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98]"
         >
           Create Account
         </button>
@@ -121,16 +143,16 @@ export default function RegisterPage() {
         {message && (
           <p
             className={`text-center text-sm font-medium ${
-              message.includes("Successful") ? "text-green-400" : "text-red-400"
+              message.includes("Successful") ? "text-teal-300" : "text-red-400"
             }`}
           >
             {message}
           </p>
         )}
 
-        <p className="text-center text-sm text-zinc-300">
+        <p className="text-center text-sm text-zinc-400">
           Already have an account?{" "}
-          <a href="/login" className="font-semibold text-indigo-400 hover:text-indigo-300 transition">
+          <a href="/login" className="font-semibold text-amber-300 hover:text-amber-200 transition">
             Login
           </a>
         </p>

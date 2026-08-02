@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import HistoryModal from "./HistoryModal";
 import Flashcards from "./Flashcards";
+import SettingsModal from "./SettingsModal";
 import {
   getProfile,
   uploadPDF,
@@ -30,6 +31,7 @@ import {
   FaEdit,
   FaSave,
   FaUndo,
+  FaCog,
 } from "react-icons/fa";
 
 export default function DashboardPage() {
@@ -37,6 +39,7 @@ export default function DashboardPage() {
 
   const [user, setUser] = useState<any>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -300,6 +303,14 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowSettings(true)}
+              className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-zinc-200 shadow-md shadow-black/20 transition hover:border-amber-400/50 hover:bg-white/10"
+            >
+              <FaCog className="text-amber-300" />
+              Settings
+            </button>
+
             <button
               onClick={() => setShowHistory(true)}
               className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-zinc-200 shadow-md shadow-black/20 transition hover:border-amber-400/50 hover:bg-white/10"
@@ -696,6 +707,14 @@ export default function DashboardPage() {
         <HistoryModal
           onClose={() => setShowHistory(false)}
           onSelectDocument={handleSelectHistoryDocument}
+        />
+      )}
+
+      {showSettings && (
+        <SettingsModal
+          user={user}
+          onClose={() => setShowSettings(false)}
+          onProfileUpdated={(updatedUser) => setUser(updatedUser)}
         />
       )}
     </div>

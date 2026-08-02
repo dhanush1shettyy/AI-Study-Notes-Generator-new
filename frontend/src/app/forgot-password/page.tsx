@@ -115,19 +115,51 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950 to-black flex items-center justify-center px-4">
-      <div className="absolute top-0 left-0 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-purple-600/20 blur-3xl"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.15),transparent_60%)]"></div>
+    <div className="relative min-h-screen overflow-hidden bg-[#07080d] flex items-center justify-center px-4">
+      <style>{`
+        @keyframes drift-a {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(60px, -40px) scale(1.15); }
+        }
+        @keyframes drift-b {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-50px, 50px) scale(1.1); }
+        }
+      `}</style>
 
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/10 bg-white/10 backdrop-blur-2xl shadow-2xl p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-extrabold text-white">
+      {/* Grid texture */}
+      <div
+        className="pointer-events-none fixed inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
+
+      {/* Animated glows */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div
+          className="absolute -top-20 -left-20 h-96 w-96 rounded-full bg-amber-500/20 blur-[150px]"
+          style={{ animation: "drift-a 18s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-teal-500/20 blur-[150px]"
+          style={{ animation: "drift-b 22s ease-in-out infinite" }}
+        />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-amber-400/20 bg-zinc-900/70 backdrop-blur-2xl shadow-2xl shadow-black/60 p-8 space-y-6">
+        <div className="text-center space-y-3">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/25 to-amber-400/5 font-serif text-xl font-bold text-amber-300 shadow-lg shadow-amber-500/10">
+            SF
+          </div>
+          <h1 className="font-serif text-4xl font-bold text-white">
             {step === "email" && "Forgot Password"}
             {step === "code" && "Enter Code"}
             {step === "reset" && "Reset Password"}
           </h1>
-          <p className="text-zinc-300">
+          <p className="text-zinc-400">
             {step === "email" && "Enter your email to receive a reset code."}
             {step === "code" && `We sent a code to ${email}. Enter it below.`}
             {step === "reset" && "Choose your new password."}
@@ -139,7 +171,7 @@ export default function ForgotPasswordPage() {
             <input
               type="email"
               placeholder="Email Address"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-400 outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+              className="w-full rounded-xl border border-zinc-700 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-600 outline-none transition-all duration-300 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -147,7 +179,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-3 font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[0.98] disabled:opacity-50"
+              className="w-full rounded-xl bg-amber-400 py-3 font-bold text-black shadow-lg shadow-amber-500/20 transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98] disabled:opacity-50"
             >
               {loading ? "Sending..." : "Send Code"}
             </button>
@@ -159,7 +191,7 @@ export default function ForgotPasswordPage() {
             <input
               type="text"
               placeholder="Enter Code"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-400 outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+              className="w-full rounded-xl border border-zinc-700 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-600 outline-none transition-all duration-300 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30"
               value={code}
               onChange={(e) => setCode(e.target.value)}
             />
@@ -167,7 +199,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-3 font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[0.98] disabled:opacity-50"
+              className="w-full rounded-xl bg-amber-400 py-3 font-bold text-black shadow-lg shadow-amber-500/20 transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98] disabled:opacity-50"
             >
               {loading ? "Verifying..." : "Verify Code"}
             </button>
@@ -179,7 +211,7 @@ export default function ForgotPasswordPage() {
                 setCode("");
                 setMessage("");
               }}
-              className="w-full text-sm text-zinc-400 hover:text-zinc-300 transition"
+              className="w-full text-sm text-zinc-400 hover:text-amber-300 transition"
             >
               ← Use a different email
             </button>
@@ -191,7 +223,7 @@ export default function ForgotPasswordPage() {
             <input
               type="password"
               placeholder="New Password"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-400 outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+              className="w-full rounded-xl border border-zinc-700 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-600 outline-none transition-all duration-300 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
@@ -199,7 +231,7 @@ export default function ForgotPasswordPage() {
             <input
               type="password"
               placeholder="Confirm New Password"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-400 outline-none transition-all duration-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+              className="w-full rounded-xl border border-zinc-700 bg-black/30 px-4 py-3 text-white placeholder:text-zinc-600 outline-none transition-all duration-300 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
@@ -207,7 +239,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-3 font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[0.98] disabled:opacity-50"
+              className="w-full rounded-xl bg-amber-400 py-3 font-bold text-black shadow-lg shadow-amber-500/20 transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98] disabled:opacity-50"
             >
               {loading ? "Resetting..." : "Reset Password"}
             </button>
@@ -217,16 +249,16 @@ export default function ForgotPasswordPage() {
         {message && (
           <p
             className={`text-center text-sm font-medium ${
-              message.includes("✅") ? "text-green-400" : "text-red-400"
+              message.includes("✅") ? "text-teal-300" : "text-red-400"
             }`}
           >
             {message}
           </p>
         )}
 
-        <p className="text-center text-sm text-zinc-300">
+        <p className="text-center text-sm text-zinc-400">
           Remembered your password?{" "}
-          <a href="/login" className="font-semibold text-indigo-400 hover:text-indigo-300 transition">
+          <a href="/login" className="font-semibold text-amber-300 hover:text-amber-200 transition">
             Back to Login
           </a>
         </p>
