@@ -15,6 +15,7 @@ import {
 } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import jsPDF from "jspdf";
 import toast from "react-hot-toast";
 import {
@@ -261,6 +262,21 @@ export default function DashboardPage() {
 
   return (
     <div className="relative min-h-screen bg-[#07080d] text-white">
+      <style>{`
+        @keyframes drift-a {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(60px, -40px) scale(1.15); }
+        }
+        @keyframes drift-b {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-50px, 50px) scale(1.1); }
+        }
+        @keyframes drift-c {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(30px, 30px) scale(0.9); }
+        }
+      `}</style>
+
       {/* Grid paper texture */}
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.35]"
@@ -282,9 +298,18 @@ export default function DashboardPage() {
 
       {/* Ambient glows */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 left-1/4 h-[520px] w-[520px] rounded-full bg-amber-500/20 blur-[170px]" />
-        <div className="absolute top-1/3 -right-32 h-[460px] w-[460px] rounded-full bg-teal-500/20 blur-[170px]" />
-        <div className="absolute bottom-0 left-0 h-[380px] w-[380px] rounded-full bg-fuchsia-500/10 blur-[150px]" />
+        <div
+          className="absolute -top-32 left-1/4 h-[520px] w-[520px] rounded-full bg-amber-500/20 blur-[170px]"
+          style={{ animation: "drift-a 18s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute top-1/3 -right-32 h-[460px] w-[460px] rounded-full bg-teal-500/20 blur-[170px]"
+          style={{ animation: "drift-b 22s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute bottom-0 left-0 h-[380px] w-[380px] rounded-full bg-fuchsia-500/10 blur-[150px]"
+          style={{ animation: "drift-c 26s ease-in-out infinite" }}
+        />
       </div>
 
       {/* ============ TOP BAR ============ */}
@@ -595,8 +620,32 @@ export default function DashboardPage() {
                   </p>
                 </div>
               ) : (
-                <div className="prose prose-invert max-w-none p-8 prose-headings:font-serif md:p-10">
-                  <ReactMarkdown>{note.content}</ReactMarkdown>
+                <div
+                  className="prose prose-invert max-w-none p-8 md:p-10
+                    prose-headings:font-serif prose-headings:tracking-tight
+                    prose-h1:text-3xl prose-h1:text-amber-200 prose-h1:border-b prose-h1:border-amber-400/20 prose-h1:pb-3 prose-h1:mb-6
+                    prose-h2:text-2xl prose-h2:text-amber-200 prose-h2:mt-10 prose-h2:mb-4
+                    prose-h3:text-lg prose-h3:text-teal-200 prose-h3:mt-6 prose-h3:mb-3
+                    prose-p:text-zinc-300 prose-p:leading-relaxed
+                    prose-strong:text-white prose-strong:font-semibold
+                    prose-em:text-amber-100
+                    prose-ul:my-4 prose-li:text-zinc-300 prose-li:my-1.5
+                    prose-li:marker:text-amber-400
+                    prose-ol:my-4
+                    prose-blockquote:border-l-amber-400/50 prose-blockquote:bg-amber-400/5 prose-blockquote:py-1 prose-blockquote:not-italic prose-blockquote:text-zinc-300
+                    prose-code:text-teal-300 prose-code:bg-black/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+                    prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10
+                    prose-hr:border-white/10
+                    prose-a:text-amber-300 prose-a:no-underline hover:prose-a:underline
+                    prose-table:text-sm prose-table:my-6
+                    prose-thead:border-b prose-thead:border-white/10
+                    prose-th:text-amber-200 prose-th:font-semibold prose-th:px-4 prose-th:py-2 prose-th:text-left
+                    prose-td:px-4 prose-td:py-2 prose-td:border-t prose-td:border-white/5 prose-td:text-zinc-300
+                    prose-tr:border-white/5"
+                >
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {note.content}
+                  </ReactMarkdown>
                 </div>
               )}
 
