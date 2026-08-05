@@ -99,7 +99,13 @@ export default function Home() {
             </a>
             <a
               href="/register"
-              className="rounded-xl bg-amber-400 px-5 py-2 font-semibold text-black shadow-lg shadow-amber-500/20 transition hover:bg-amber-300"
+              className="glow-btn rounded-xl bg-amber-400 px-5 py-2 font-semibold text-black shadow-lg shadow-amber-500/20 transition hover:bg-amber-300"
+              onMouseMove={(e) => {
+                const btn = e.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                btn.style.setProperty("--bx", `${e.clientX - rect.left}px`);
+                btn.style.setProperty("--by", `${e.clientY - rect.top}px`);
+              }}
             >
               Get Started
             </a>
@@ -189,13 +195,25 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row justify-center gap-5 pt-4">
             <a
               href="/register"
-              className="rounded-xl bg-amber-400 px-8 py-4 font-semibold text-black shadow-lg shadow-amber-500/20 transition hover:scale-105 hover:bg-amber-300"
+              className="glow-btn rounded-xl bg-amber-400 px-8 py-4 font-semibold text-black shadow-lg shadow-amber-500/20 transition hover:scale-105 hover:bg-amber-300"
+              onMouseMove={(e) => {
+                const btn = e.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                btn.style.setProperty("--bx", `${e.clientX - rect.left}px`);
+                btn.style.setProperty("--by", `${e.clientY - rect.top}px`);
+              }}
             >
               🚀 Get Started
             </a>
             <a
               href="/login"
-              className="rounded-xl border border-zinc-700 px-8 py-4 font-semibold text-white transition hover:border-amber-400/50 hover:bg-white/5"
+              className="glow-btn rounded-xl border border-zinc-700 px-8 py-4 font-semibold text-white transition hover:border-amber-400/50 hover:bg-white/5"
+              onMouseMove={(e) => {
+                const btn = e.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                btn.style.setProperty("--bx", `${e.clientX - rect.left}px`);
+                btn.style.setProperty("--by", `${e.clientY - rect.top}px`);
+              }}
             >
               Login
             </a>
@@ -253,28 +271,79 @@ export default function Home() {
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
-          <div className="rounded-3xl border border-white/10 border-l-4 border-l-indigo-400/60 bg-white/[0.03] p-8 shadow-xl shadow-black/30 transition-all duration-300 hover:-translate-y-2">
-            <div className="text-5xl">📄</div>
-            <h3 className="mt-6 font-serif text-2xl font-bold">Upload PDFs</h3>
-            <p className="mt-4 leading-7 text-zinc-400">
-              Upload textbooks, handwritten notes, assignments and lecture slides effortlessly.
-            </p>
+          <div
+            className="relative overflow-hidden rounded-3xl border border-white/10 border-l-4 border-l-indigo-400/60 bg-white/[0.03] p-8 shadow-xl shadow-black/30 transition-all duration-300 hover:-translate-y-2"
+            onMouseMove={(e) => {
+              const card = e.currentTarget;
+              const rect = card.getBoundingClientRect();
+              card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+              card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+            }}
+          >
+            <div
+              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+              style={{
+                background:
+                  "radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(251,191,36,0.15), rgba(45,212,191,0.08), transparent 70%)",
+              }}
+            />
+            <div className="relative z-10">
+              <div className="text-5xl">📄</div>
+              <h3 className="mt-6 font-serif text-2xl font-bold">Upload PDFs</h3>
+              <p className="mt-4 leading-7 text-zinc-400">
+                Upload textbooks, handwritten notes, assignments and lecture slides effortlessly.
+              </p>
+            </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 border-l-4 border-l-amber-400/60 bg-white/[0.03] p-8 shadow-xl shadow-black/30 transition-all duration-300 hover:-translate-y-2">
-            <div className="text-5xl">🤖</div>
-            <h3 className="mt-6 font-serif text-2xl font-bold">AI Generated Notes</h3>
-            <p className="mt-4 leading-7 text-zinc-400">
-              Let AI summarize your study material into clean, structured notes within seconds.
-            </p>
+          <div
+            className="relative overflow-hidden rounded-3xl border border-white/10 border-l-4 border-l-amber-400/60 bg-white/[0.03] p-8 shadow-xl shadow-black/30 transition-all duration-300 hover:-translate-y-2"
+            onMouseMove={(e) => {
+              const card = e.currentTarget;
+              const rect = card.getBoundingClientRect();
+              card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+              card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+            }}
+          >
+            <div
+              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+              style={{
+                background:
+                  "radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(251,191,36,0.15), rgba(45,212,191,0.08), transparent 70%)",
+              }}
+            />
+            <div className="relative z-10">
+              <div className="text-5xl">🤖</div>
+              <h3 className="mt-6 font-serif text-2xl font-bold">AI Generated Notes</h3>
+              <p className="mt-4 leading-7 text-zinc-400">
+                Let AI summarize your study material into clean, structured notes within seconds.
+              </p>
+            </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 border-l-4 border-l-teal-400/60 bg-white/[0.03] p-8 shadow-xl shadow-black/30 transition-all duration-300 hover:-translate-y-2">
-            <div className="text-5xl">💬</div>
-            <h3 className="mt-6 font-serif text-2xl font-bold">AI Chat Assistant</h3>
-            <p className="mt-4 leading-7 text-zinc-400">
-              Ask questions about your uploaded notes and receive instant AI-powered explanations.
-            </p>
+          <div
+            className="relative overflow-hidden rounded-3xl border border-white/10 border-l-4 border-l-teal-400/60 bg-white/[0.03] p-8 shadow-xl shadow-black/30 transition-all duration-300 hover:-translate-y-2"
+            onMouseMove={(e) => {
+              const card = e.currentTarget;
+              const rect = card.getBoundingClientRect();
+              card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+              card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+            }}
+          >
+            <div
+              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+              style={{
+                background:
+                  "radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(251,191,36,0.15), rgba(45,212,191,0.08), transparent 70%)",
+              }}
+            />
+            <div className="relative z-10">
+              <div className="text-5xl">💬</div>
+              <h3 className="mt-6 font-serif text-2xl font-bold">AI Chat Assistant</h3>
+              <p className="mt-4 leading-7 text-zinc-400">
+                Ask questions about your uploaded notes and receive instant AI-powered explanations.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -311,13 +380,28 @@ export default function Home() {
           ].map((item) => (
             <div
               key={item.step}
-              className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-8 shadow-xl shadow-black/30"
+              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-8 shadow-xl shadow-black/30"
+              onMouseMove={(e) => {
+                const card = e.currentTarget;
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+                card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+              }}
             >
-              <span className={`font-serif text-5xl font-extrabold ${item.color} opacity-40`}>
-                {item.step}
-              </span>
-              <h3 className="mt-4 text-2xl font-bold">{item.title}</h3>
-              <p className="mt-4 leading-7 text-zinc-400">{item.desc}</p>
+              <div
+                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+                style={{
+                  background:
+                    "radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(251,191,36,0.15), rgba(45,212,191,0.08), transparent 70%)",
+                }}
+              />
+              <div className="relative z-10">
+                <span className={`font-serif text-5xl font-extrabold ${item.color} opacity-40`}>
+                  {item.step}
+                </span>
+                <h3 className="mt-4 text-2xl font-bold">{item.title}</h3>
+                <p className="mt-4 leading-7 text-zinc-400">{item.desc}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -360,7 +444,13 @@ export default function Home() {
           </p>
           <a
             href="/register"
-            className="mt-8 inline-block rounded-xl bg-amber-400 px-8 py-4 font-semibold text-black shadow-lg shadow-amber-500/20 transition hover:scale-105 hover:bg-amber-300"
+            className="glow-btn mt-8 inline-block rounded-xl bg-amber-400 px-8 py-4 font-semibold text-black shadow-lg shadow-amber-500/20 transition hover:scale-105 hover:bg-amber-300"
+            onMouseMove={(e) => {
+              const btn = e.currentTarget;
+              const rect = btn.getBoundingClientRect();
+              btn.style.setProperty("--bx", `${e.clientX - rect.left}px`);
+              btn.style.setProperty("--by", `${e.clientY - rect.top}px`);
+            }}
           >
             🚀 Get Started for Free
           </a>
