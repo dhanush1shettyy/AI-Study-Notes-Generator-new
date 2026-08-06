@@ -1,5 +1,5 @@
 "use client";
-
+import CursorGlowFollower from "@/components/CursorGlowFollower";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -23,6 +23,8 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-[#07080d] text-white font-sans selection:bg-amber-400/30 scroll-smooth">
+       <CursorGlowFollower />
+      
       {/* Animated background keyframes */}
       <style>{`
         @keyframes drift-a {
